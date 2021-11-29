@@ -132,14 +132,14 @@ export class WalletProvider {
   }
 
   private getKeysWithFixes(parsedFile): Promise<any[]> {
-    const Key = this.bwcProvider.getKey();
+    const Key: any = this.bwcProvider.getKey();
     return new Promise(resolve => {
       this.persistenceProvider.getKeys().then(keys => {
         const allKeys = keys
           ? keys
               .filter(k => !k.xPrivKeyEncrypted)
               .map(key => {
-                const currentXPrivKey = this.bwcProvider.Client.Ducatuscore.HDPrivateKey(
+                const currentXPrivKey = this.bwcProvider.Client.BitcoreDuc.HDPrivateKey(
                   key.xPrivKey
                 ).toObject();
                 const credentialsData = { ...parsedFile };
@@ -149,13 +149,16 @@ export class WalletProvider {
                   currentXPrivKey.network = 'livenet';
                   currentXPrivKey.xprivkey = undefined;
                   currentXPrivKey.checksum = undefined;
-                  const newXPrivKey = this.bwcProvider.Client.Ducatuscore.HDPrivateKey.fromObject(
+                  const newXPrivKey = this.bwcProvider.Client.BitcoreDuc.HDPrivateKey.fromObject(
                     currentXPrivKey
                   );
                   key.xPrivKey = newXPrivKey.toString();
                 }
 
-                const recoveryKey = Key.fromObj(key);
+                const recoveryKey = new Key({
+                  seedType: 'object',
+                  seedData: key
+                })
                 const recoveryCredentials = recoveryKey.createCredentials(
                   parsedFile.passphrase,
                   credentialsData
@@ -179,7 +182,7 @@ export class WalletProvider {
         resolve(parsedFile);
       });
     }
-    const network = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromString(
+    const network = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromString(
       parsedFile.xPubKey
     ).network;
     if (!network || network.name !== 'restore') {
@@ -193,26 +196,26 @@ export class WalletProvider {
     parsedFile.useLegacyPurpose = parsedFile.n > 1;
     parsedFile.singleAddress = parsedFile.useLegacyPurpose;
 
-    const walletXPub = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromString(
+    const walletXPub = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromString(
       parsedFile.xPubKey
     ).toObject();
     walletXPub.network = 'livenet';
     walletXPub.xpubkey = undefined;
     walletXPub.checksum = undefined;
-    const walletXPubStr = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromObject(
+    const walletXPubStr = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromObject(
       walletXPub
     ).toString();
 
     parsedFile.xPubKey = walletXPubStr;
 
     parsedFile.publicKeyRing.forEach(oneRing => {
-      const oldXPubKey = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromString(
+      const oldXPubKey = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromString(
         oneRing.xPubKey
       ).toObject();
       oldXPubKey.network = 'livenet';
       oldXPubKey.xpubkey = undefined;
       oldXPubKey.checksum = undefined;
-      oneRing.xPubKey = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromObject(
+      oneRing.xPubKey = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromObject(
         oldXPubKey
       ).toString();
     });
@@ -239,21 +242,24 @@ export class WalletProvider {
     };
 
     const fromPrivate = () => {
-      const recreateData: any = {};
+      let seedType: string;
+      let seedData: any;
 
       if (parsedFile.mnemonic) {
-        recreateData.method = 'fromMnemonic';
-        recreateData.data = parsedFile.mnemonic;
+        seedType = 'mnemonic';
+        seedData = parsedFile.mnemonic;
       } else {
-        recreateData.method = 'fromExtendedPrivateKey';
-        recreateData.data = parsedFile.xPrivKey;
+        seedType = 'extendedPrivateKey';
+        seedData = parsedFile.xPrivKey;
       }
 
-      const key = Key[recreateData.method](recreateData.data, {
+      const key: any = new Key({
+        seedType,
+        seedData,
         useLegacyCoinType: parsedFile.useLegacyCoinType,
         useLegacyPurpose: parsedFile.useLegacyPurpose,
         passphrase: parsedFile.passphrase
-      });
+      })
 
       const credentialsData = { ...parsedFile };
       credentialsData.useLegacyCoinType = undefined;
@@ -282,11 +288,11 @@ export class WalletProvider {
         })[0];
         if (existsKey) {
           fromSavedKey(existsKey).then(() => {
-            resolve();
+            resolve(null);
           }, reject);
         } else if (parsedFile.xPrivKey) {
           fromPrivate().then(() => {
-            resolve();
+            resolve(null);
           }, reject);
         }
       });
@@ -949,7 +955,7 @@ export class WalletProvider {
 
               const updateNotes = (): Promise<any> => {
                 return new Promise((resolve, reject) => {
-                  if (!endingTs) return resolve();
+                  if (!endingTs) return resolve(null);
 
                   // this.logger.debug('Syncing notes from: ' + endingTs);
                   wallet.getTxNotes(
@@ -972,7 +978,7 @@ export class WalletProvider {
                           }
                         });
                       });
-                      return resolve();
+                      return resolve(null);
                     }
                   );
                 });
@@ -1023,7 +1029,7 @@ export class WalletProvider {
                           newHistory.length
                       );
 
-                      return resolve();
+                      return resolve(null);
                     })
                     .catch(err => {
                       return reject(err);
@@ -1112,7 +1118,7 @@ export class WalletProvider {
             normalLevelRate.feePerKb / 1000
           ).toFixed(0);
           const size = this.getEstimatedTxSize(wallet, nbOutputs);
-          // parseInt('2e21',10) = 2
+           // parseInt('2e21',10) = 2
           // parseInt('2000000000000000000000',10) = 2e+21
           return resolve(
             size * parseInt(Number(lowLevelRate).toLocaleString('fullwide', { useGrouping: false }), 10)
@@ -1229,7 +1235,7 @@ export class WalletProvider {
     return new Promise((resolve, reject) => {
       opts = opts || {};
 
-      if (!wallet.isComplete()) return resolve();
+      if (!wallet.isComplete()) return resolve(null);
 
       if (this.isHistoryCached(wallet) && !opts.force) {
         this.logger.debug('Returning cached history for ' + wallet.id);
@@ -1405,7 +1411,7 @@ export class WalletProvider {
           );
           return reject(err);
         }
-        return resolve();
+        return resolve(null);
       });
     });
   }
@@ -1437,7 +1443,7 @@ export class WalletProvider {
       wallet.recreateWallet(err => {
         wallet.notAuthorized = false;
         if (err) return reject(err);
-        return resolve();
+        return resolve(null);
       });
     });
   }
@@ -1455,7 +1461,7 @@ export class WalletProvider {
         },
         err => {
           if (err) return reject(err);
-          return resolve();
+          return resolve(null);
         }
       );
     });
@@ -1472,7 +1478,7 @@ export class WalletProvider {
       this.persistenceProvider
         .clearLastAddress(walletId)
         .then(() => {
-          return resolve();
+          return resolve(null);
         })
         .catch(err => {
           return reject(err);
@@ -1512,7 +1518,7 @@ export class WalletProvider {
         (t: { address: string }) => t.address === addressSelect
       );
 
-      const info = this.bwcProvider.Client.Ducatuscore.HDPublicKey.fromString(
+      const info = this.bwcProvider.Client.BitcoreDuc.HDPublicKey.fromString(
         walletToSend.wallet.credentials.xPubKey
       );
 
@@ -1607,7 +1613,7 @@ export class WalletProvider {
 
     const privateWifKey = await this.getKeys(wallet)
       .then(async keys => {
-        const xPrivKey = this.bwcProvider.Client.Ducatuscore.HDPrivateKey(
+        const xPrivKey = this.bwcProvider.Client.BitcoreDuc.HDPrivateKey(
           keys.xPrivKey
         );
 
@@ -1615,7 +1621,7 @@ export class WalletProvider {
           wallet.credentials.rootPath
         );
 
-        const xpriv = this.bwcProvider.Client.Ducatuscore.HDPrivateKey(
+        const xpriv = this.bwcProvider.Client.BitcoreDuc.HDPrivateKey(
           derivedPrivKey
         );
 
@@ -1774,7 +1780,7 @@ export class WalletProvider {
           this.events.publish('Local/TxAction', {
             walletId: wallet.id
           });
-          return resolve();
+          return resolve(null);
         })
         .catch(err => {
           return reject(this.bwcErrorProvider.msg(err));
@@ -1911,7 +1917,7 @@ export class WalletProvider {
   public getEncodedWalletInfo(wallet, password?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!wallet.credentials.keyId) {
-        return resolve();
+        return resolve(null);
       }
 
       const derivationPath = this.keyProvider.getBaseAddressDerivationPath(
@@ -2078,7 +2084,7 @@ export class WalletProvider {
             if (err && !(err instanceof this.errors.COPAYER_IN_WALLET))
               return reject(err);
             if (++i == wallet.credentials.publicKeyRing.length)
-              return resolve();
+              return resolve(null);
           }
         );
       });

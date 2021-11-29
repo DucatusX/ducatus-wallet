@@ -12,13 +12,13 @@ export interface CoinNetwork {
 export class AddressProvider {
   private bitcore;
   private bitcoreCash;
-  private ducatuscore;
+  private bitcoreDuc;
   private core;
 
   constructor(private bwcProvider: BwcProvider, private logger: Logger) {
     this.bitcore = this.bwcProvider.getBitcore();
     this.bitcoreCash = this.bwcProvider.getBitcoreCash();
-    this.ducatuscore = this.bwcProvider.getDucatuscore();
+    this.bitcoreDuc = this.bwcProvider.getBitcoreDuc();
     this.core = this.bwcProvider.getCore();
   }
 
@@ -50,7 +50,7 @@ export class AddressProvider {
         return { coin: 'bch', network };
       } catch (e) {
         try {
-          network = this.ducatuscore.Address(address).network.name;
+          network = this.bitcoreDuc.Address(address).network.name;
           return { coin: 'duc', network };
         } catch (e) {
           try {
@@ -92,7 +92,7 @@ export class AddressProvider {
     const Address = this.bitcore.Address;
     const URICash = this.bitcoreCash.URI;
     const AddressCash = this.bitcoreCash.Address;
-    const AddressDucatus = this.ducatuscore.Address;
+    const AddressDucatus = this.bitcoreDuc.Address;
     const { Validation } = this.core;
 
     // Bip21 uri

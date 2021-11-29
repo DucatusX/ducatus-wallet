@@ -27,8 +27,7 @@ import { WalletOptions, WalletProvider } from '../wallet/wallet';
 
 // models
 import { Profile } from '../../models/profile/profile.model';
-
-import { Deriver } from '@ducatus/ducatus-crypto-wallet-core-rev';
+// import { Deriver } from '@ducatus/crypto-wallet-core';
 
 interface WalletGroups {
   [keyId: string]: {
@@ -87,145 +86,14 @@ export class ProfileProvider {
 
     // xpub6C8byPoebe5qhmkucDusW2TXpG8vwPYDeyCiyA9YqvcepfNEiSPbJu6sx8a9b483uhYkb9CN98XbNTT43Yctao7BM2Q85GYkSKDMLnEFUVS
     
-    const address = Deriver.deriveAddress(
-      'DUC',
-      'mainnet',
-      'xpub6C8byPoebe5qhmkucDusW2TXpG8vwPYDeyCiyA9YqvcepfNEiSPbJu6sx8a9b483uhYkb9CN98XbNTT43Yctao7BM2Q85GYkSKDMLnEFUVS',
-      0,
-      false
-    );
-    this.logger.debug(address);
-
-    // let addressesText = '';
-    // window.onload = () => {
-    //
-    //   const body = document.getElementsByTagName('body')[0];
-    //   body.style.position = 'static';
-    //   body.style.overflow = 'auto';
-    //
-    //   const svgBox = document.createElement('div');
-    //   svgBox.style.marginLeft = '3%';
-    //   svgBox.style.marginRight = '3%';
-    //
-    //   body.innerHTML = '';
-    //   body.appendChild(svgBox);
-    //
-    //   let k = 0, loadedInformation = 0;
-    //
-    //   while (k < 510) {
-    //     k++;
-    //     this.seedWallet({
-    //       coin: 'duc'
-    //     }).then((a) => {
-    //       const address = Deriver.deriveAddress(
-    //         'DUC',
-    //         'mainnet',
-    //         a.walletClient.credentials.xPubKey,
-    //         0,
-    //         true);
-    //       //
-    //       // const svgAddress = new QRCode({
-    //       //   content: 'ducatus:' + address,
-    //       //   join: true,
-    //       //   container: 'svg-viewbox',
-    //       //   padding: 3
-    //       // }).svg();
-    //
-    //       addressesText+= address + "\n";
-    //
-    //
-    //       const svgMnemonic = new QRCode({
-    //         content: '1|' + a.key.mnemonic + '|null|null|false|null',
-    //         join: true,
-    //         container: 'svg-viewbox',
-    //         padding: 3,
-    //       }).svg();
-    //
-    //       loadedInformation++;
-    //
-    //       // const textSpan = document.createElement('span');
-    //       // textSpan.style.color = '#ddd';
-    //       // textSpan.style.position = 'absolute';
-    //       // textSpan.style.left = '8.5%';
-    //       // textSpan.style.top = '1%';
-    //       // textSpan.style.fontFamily = 'sans-serif';
-    //       // textSpan.style.fontSize = '13px';
-    //       // textSpan.innerText = loadedInformation + '-2';
-    //
-    //
-    //       // const svgNodeAddress = document.createElement('div');
-    //       // svgNodeAddress.style.width = "50%";
-    //       // svgNodeAddress.style.float = "left";
-    //       // svgNodeAddress.style.position = "relative";
-    //       // svgNodeAddress.style.boxSizing = "border-box";
-    //       // svgNodeAddress.style.borderRight = "1px dotted transparent";
-    //       // svgNodeAddress.innerHTML = svgAddress;
-    //       // svgNodeAddress.appendChild(textSpan);
-    //
-    //
-    //
-    //       // const cloneTextSpan = document.createElement('span');
-    //       // cloneTextSpan.style.color = '#ddd';
-    //       // cloneTextSpan.style.position = 'absolute';
-    //       // cloneTextSpan.style.left = '8.5%';
-    //       // cloneTextSpan.style.top = '1%';
-    //       // cloneTextSpan.style.fontFamily = 'sans-serif';
-    //       // cloneTextSpan.style.fontSize = '13px';
-    //       // cloneTextSpan.innerText = loadedInformation + '-1';
-    //
-    //
-    //       const mnemonicText = document.createElement('div');
-    //       mnemonicText.innerHTML = '<b style="color: #000">Seed phrase:</b> ' + a.key.mnemonic;
-    //
-    //       mnemonicText.style.marginLeft = "6.5%";
-    //       mnemonicText.style.fontFamily = "sans-serif";
-    //       mnemonicText.style.fontSize = "14px";
-    //       mnemonicText.style.lineHeight = "1.2em";
-    //       mnemonicText.style.marginTop = "-15px";
-    //       mnemonicText.style.marginBottom = "10px";
-    //       mnemonicText.style.marginRight = "6.5%";
-    //       mnemonicText.style.color = "rgb(154, 144, 144)";
-    //
-    //
-    //       const svgNodeMnemonic = document.createElement('div');
-    //       svgNodeMnemonic.style.width = "50%";
-    //       svgNodeMnemonic.style['float'] = "left";
-    //       svgNodeMnemonic.style.position = "relative";
-    //       svgNodeMnemonic.style.boxSizing = "border-box";
-    //       svgNodeMnemonic.style.border = "1px dotted #ddd";
-    //
-    //       const svgNodeQR = document.createElement('div');
-    //
-    //       svgNodeQR.style.width = "50%";
-    //       svgNodeQR.style.marginLeft = "auto";
-    //       svgNodeQR.style.marginRight = "auto";
-    //
-    //       svgNodeQR.innerHTML = svgMnemonic;
-    //
-    //       svgNodeMnemonic.appendChild(svgNodeQR);
-    //       svgNodeMnemonic.appendChild(mnemonicText);
-    //
-    //
-    //       const separate = document.createElement('div');
-    //       separate.style.clear = 'both';
-    //
-    //       // svgBox.appendChild(svgNodeAddress);
-    //       svgBox.appendChild(svgNodeMnemonic);
-    //
-    //       if (!(loadedInformation % 2)) {
-    //         svgBox.appendChild(separate);
-    //       }
-    //
-    //       if (loadedInformation === k) {
-    //         const blob = new Blob([addressesText],
-    //           { type: "text/plain;charset=utf-8" });
-    //         window['saveAs'](blob, "DucatusAddressess.txt");
-    //       }
-    //
-    //     });
-    //   }
-    //
-    // };
+    // const address = Deriver.deriveAddress(
+    //   'DUC',
+    //   'mainnet',
+    //   'xpub6C8byPoebe5qhmkucDusW2TXpG8vwPYDeyCiyA9YqvcepfNEiSPbJu6sx8a9b483uhYkb9CN98XbNTT43Yctao7BM2Q85GYkSKDMLnEFUVS',
+    //   0,
+    //   false
+    // );
+    // this.logger.debug(address);
   }
 
   private trySetName(wallet: any, i: number = 0): any {
@@ -1134,14 +1002,17 @@ export class ProfileProvider {
       let credentials;
       let key;
       let addressBook;
-      const Key = this.bwcProvider.getKey();
+      const Key: any = this.bwcProvider.getKey();
 
       const data = JSON.parse(str);
       if (data.credentials) {
         try {
           credentials = data.credentials;
           if (data.key) {
-            key = Key.fromObj(data.key);
+            key = new Key({
+              seedType: 'object',
+              seedData: data.key
+            });
           }
           addressBook = data.addressBook;
         } catch (err) {
@@ -1204,7 +1075,7 @@ export class ProfileProvider {
         {
           baseUrl: opts.bwsurl // clientOpts
         },
-        (err, key, walletClients) => {
+        async (err, key, walletClients) => {
           if (err) {
             return reject(err);
           }
@@ -1465,12 +1336,14 @@ export class ProfileProvider {
 
       const walletClient = this.bwcProvider.getClient(null, opts);
       const network = opts.networkName || 'livenet';
-      const Key = this.bwcProvider.getKey();
+      const Key: any = this.bwcProvider.getKey();
       let key;
       if (opts.mnemonic) {
         try {
           opts.mnemonic = this.normalizeMnemonic(opts.mnemonic);
-          key = Key.fromMnemonic(opts.mnemonic, {
+          key = new Key({
+            seedType: 'mnemonic',
+            seedData: opts.mnemonic,
             useLegacyCoinType: opts.useLegacyCoinType,
             useLegacyPurpose: opts.useLegacyPurpose,
             passphrase: opts.passphrase
@@ -1494,7 +1367,9 @@ export class ProfileProvider {
         }
       } else if (opts.extendedPrivateKey) {
         try {
-          key = Key.fromExtendedPrivateKey(opts.extendedPrivateKey, {
+          key = new Key({
+            seedType: 'extendedPrivateKey',
+            seedData: opts.extendedPrivateKey,
             useLegacyCoinType: opts.useLegacyCoinType,
             useLegacyPurpose: opts.useLegacyPurpose
           });
@@ -1521,8 +1396,9 @@ export class ProfileProvider {
         const lang = this.languageProvider.getCurrent();
         try {
           if (!opts.keyId) {
-            key = Key.create({
-              lang
+            key = new Key({
+              seedType: 'new',
+              language: lang
             });
           } else {
             key = this.keyProvider.getKey(opts.keyId);
@@ -1539,7 +1415,7 @@ export class ProfileProvider {
           this.logger.info('Error creating recovery phrase: ' + e.message);
           if (e.message.indexOf('language') > 0) {
             this.logger.info('Using default language for recovery phrase');
-            key = Key.create({});
+            key = new Key({ seedType: 'new' });
             walletClient.fromString(
               key.createCredentials(opts.password, {
                 coin: opts.coin,

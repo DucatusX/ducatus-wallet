@@ -145,7 +145,7 @@ export class BackupGamePage {
     }
 
     if (this.mnemonicHasPassphrase) {
-      const keyClient = this.bwcProvider.getKey();
+      const keyClient: any = this.bwcProvider.getKey();
       const separator = this.useIdeograms ? '\u3000' : ' ';
       const customSentence = customWordList.join(separator);
       const password = this.password || '';

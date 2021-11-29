@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import {ApiProvider} from '../../providers/api/api';
 import { Logger } from '../../providers/logger/logger';
 
-import BWC from '@ducatus/ducatus-wallet-client-rev';
+import BWC from '@ducatus/bitcore-wallet-client';
 
 @Injectable()
 export class BwcProvider {
@@ -20,8 +20,8 @@ export class BwcProvider {
     return BWC.BitcoreCash;
   }
 
-  public getDucatuscore() {
-    return BWC.Ducatuscore;
+  public getBitcoreDuc() {
+    return BWC.BitcoreDuc;
   }
 
   public getCore() {

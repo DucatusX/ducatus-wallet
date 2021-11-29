@@ -110,7 +110,7 @@ export class IncomingDataProvider {
 
   private isValidDucatusUri(data: string): boolean {
     data = this.sanitizeUri(data);
-    return !!this.bwcProvider.getDucatuscore().URI.isValid(data);
+    return !!this.bwcProvider.getBitcoreDuc().URI.isValid(data);
   }
 
   private isValidDucatusXUri(data: string): boolean {
@@ -166,8 +166,8 @@ export class IncomingDataProvider {
 
   private isValidDucatusAddress(data: string): boolean {
     return !!(
-      this.bwcProvider.getDucatuscore().Address.isValid(data, 'livenet') ||
-      this.bwcProvider.getDucatuscore().Address.isValid(data, 'testnet')
+      this.bwcProvider.getBitcoreDuc().Address.isValid(data, 'livenet') ||
+      this.bwcProvider.getBitcoreDuc().Address.isValid(data, 'testnet')
     );
   }
 
@@ -392,7 +392,7 @@ export class IncomingDataProvider {
     let amountFromRedirParams =
       redirParams && redirParams.amount ? redirParams.amount : '';
     const coin = Coin.DUC;
-    let parsed = this.bwcProvider.getDucatuscore().URI(data);
+    let parsed = this.bwcProvider.getBitcoreDuc().URI(data);
     let address = parsed.address ? parsed.address.toString() : '';
     let message = parsed.message;
     let amount = parsed.amount || amountFromRedirParams;

@@ -51,7 +51,7 @@ export class ConfirmPage {
   @ViewChild('slideButton')
   slideButton;
   protected bitcoreCash;
-  protected ducatuscore;
+  protected bitcoreDuc;
 
   public countDown = null;
   public CONFIRM_LIMIT_USD: number;
@@ -134,7 +134,7 @@ export class ConfirmPage {
     this.fromWalletDetails = this.navParams.data.fromWalletDetails;
     this.fromCoinbase = this.navParams.data.fromCoinbase;
     this.bitcoreCash = this.bwcProvider.getBitcoreCash();
-    this.ducatuscore = this.bwcProvider.getDucatuscore();
+    this.bitcoreDuc = this.bwcProvider.getBitcoreDuc();
     this.CONFIRM_LIMIT_USD = 20;
     this.FEE_TOO_HIGH_LIMIT_PER = 15;
     this.config = this.configProvider.get();
@@ -501,7 +501,7 @@ export class ConfirmPage {
 
       // End of quick refresh, before wallet is selected.
       if (!wallet) {
-        return resolve();
+        return resolve(null);
       }
 
       this.onGoingProcessProvider.set('calculatingFee');
@@ -549,7 +549,7 @@ export class ConfirmPage {
           if (tx.sendMax && this.isChain()) {
             this.useSendMax(tx, wallet, opts)
               .then(() => {
-                return resolve();
+                return resolve(null);
               })
               .catch(err => {
                 return reject(err);
@@ -557,7 +557,7 @@ export class ConfirmPage {
           } else if (tx.speedUpTx && this.isChain()) {
             this.speedUpTx(tx, wallet, opts)
               .then(() => {
-                return resolve();
+                return resolve(null);
               })
               .catch(err => {
                 return reject(err);
@@ -566,13 +566,13 @@ export class ConfirmPage {
             // txp already generated for this wallet?
             if (tx.txp[wallet.id]) {
               this.onGoingProcessProvider.clear();
-              return resolve();
+              return resolve(null);
             }
 
             this.buildTxp(tx, wallet, opts)
               .then(() => {
                 this.onGoingProcessProvider.clear();
-                return resolve();
+                return resolve(null);
               })
               .catch(err => {
                 this.onGoingProcessProvider.clear();
@@ -599,7 +599,7 @@ export class ConfirmPage {
               this.showErrorInfoSheet(
                 this.translate.instant('Not enough funds for fee')
               );
-              return resolve();
+              return resolve(null);
             }
             tx.sendMaxInfo = sendMaxInfo;
             tx.amount = tx.sendMaxInfo.amount;
@@ -608,12 +608,12 @@ export class ConfirmPage {
           this.showWarningSheet(wallet, sendMaxInfo);
           // txp already generated for this wallet?
           if (tx.txp[wallet.id]) {
-            return resolve();
+            return resolve(null);
           }
 
           this.buildTxp(tx, wallet, opts)
             .then(() => {
-              return resolve();
+              return resolve(null);
             })
             .catch(err => {
               return reject(err);
@@ -709,7 +709,7 @@ export class ConfirmPage {
               ' Txp:' +
               txp.id
           );
-          return resolve();
+          return resolve(null);
         })
         .catch(err => {
           if (err.message == 'Insufficient funds') {
@@ -723,7 +723,7 @@ export class ConfirmPage {
 
   private getSendMaxInfo(tx, wallet): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!tx.sendMax) return resolve();
+      if (!tx.sendMax) return resolve(null);
 
       this.onGoingProcessProvider.set('retrievingInputs');
       this.walletProvider
@@ -860,7 +860,7 @@ export class ConfirmPage {
           }
 
           if (tx.coin && tx.coin == 'duc') {
-            recipient.toAddress = this.ducatuscore
+            recipient.toAddress = this.bitcoreDuc
               .Address(recipient.toAddress)
               .toString(true);
 
