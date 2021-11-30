@@ -14,14 +14,14 @@ export class DerivationPathHelperProvider {
   public defaultMultisigDUC: string;
 
   public constructor() {
-    this.defaultBTC = "m/44'/1025'/0'";
-    this.defaultDUC = "m/44'/0'/0'";
+    this.defaultBTC = "m/44'/0'/0'";
+    this.defaultDUC = "m/44'/1025'/0'";
     this.defaultBCH = "m/44'/145'/0'";
     this.defaultETH = "m/44'/60'/0'";
     this.defaultDUCX = "m/44'/1060'/0'";
     this.defaultXRP = "m/44'/144'/0'";
-    this.defaultMultisigBTC = "m/48'/1025'/0'";
-    this.defaultMultisigDUC = "m/44'/0'/0'";
+    this.defaultMultisigBTC = "m/48'/0'/0'";
+    this.defaultMultisigDUC = "m/48'/1025'/0'";
     this.defaultMultisigBCH = "m/48'/145'/0'";
     this.defaultTestnet = "m/44'/1'/0'";
   }
@@ -61,10 +61,10 @@ export class DerivationPathHelperProvider {
     let networkName: string;
 
     switch (coinCode) {
-      case "1025'": // for BTC
+      case "0'": // for BTC
         networkName = 'livenet';
         break;
-      case "0'": // for DUC
+      case "1025'": // for DUC
         networkName = 'livenet';
         break;
       case "1'": // testnet for all coins
@@ -100,19 +100,19 @@ export class DerivationPathHelperProvider {
   public isValidDerivationPathCoin(path: string, coin: string): boolean {
     let isValid: boolean;
     const coinCode = this.parsePath(path).coinCode;
-
+    
     // BIP45
     if (path == "m/45'") return true;
 
     switch (coin) {
       case 'btc':
-        isValid = ["1025'", "1'"].indexOf(coinCode) > -1;
+        isValid = ["0'", "1'"].indexOf(coinCode) > -1;
         break;
       case 'bch':
         isValid = ["145'", "0'", "1'"].indexOf(coinCode) > -1;
         break;
       case 'duc':
-        isValid = ["0'", "0'", "1'"].indexOf(coinCode) > -1;
+        isValid = ["1025'", "0'", "1'"].indexOf(coinCode) > -1;
         break;
       case 'eth':
         isValid = ["60'", "0'", "1'"].indexOf(coinCode) > -1;
