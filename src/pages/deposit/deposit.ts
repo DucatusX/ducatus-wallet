@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AlertController, NavController } from 'ionic-angular';
 import { DepositAddPage } from './deposit-add/deposit-add';
+import { Big } from 'big.js';
+import { RateProvider, FilterProvider } from '../../providers';
 
 import _ from 'lodash';
 
@@ -24,7 +26,9 @@ export class DepositPage {
     private httpClient: HttpClient,
     private profileProvider: ProfileProvider,
     private walletProvider: WalletProvider,
-    private apiProvider: ApiProvider
+    private apiProvider: ApiProvider,
+    private rateProvider: RateProvider,
+    private filter: FilterProvider
   ) {}
 
   ionViewWillEnter() {
@@ -85,12 +89,25 @@ export class DepositPage {
       });
 
       this.httpClient
-        .get(`${this.apiProvider.getAddresses().ducatuscoins}/api/v3/get_deposits/?wallet_ids=${walletsResult}`)
+        .get(`${this.apiProvider.getAddresses().deposit}/api/v3/get_deposits/?wallet_ids=${walletsResult}`)
         .toPromise()
         .then(result => {
           this.deposits = result as any;
 
           this.deposits.map(x => {
+            //we get an alternative balance
+            if(x.duc_amount){
+              let balance = new Big(x.duc_amount);
+              balance = Number(balance.times(100000000));
+              this.rateProvider.whenRatesAvailable('duc').then(() => {
+                x.duc_amountAlt = this.rateProvider.toFiat(balance, 'USD', 'duc');
+                x.duc_amountAlt = this.filter.formatFiatAmount(x.duc_amountAlt);
+              });
+            }
+            else if (x.duc_amount === 0) {
+              x.duc_amountAlt = 0;
+            }
+            //
             if (x.depositinput_set.length != 0) {
               x.ended_at_date = new Date(x.ended_at * 1000);
               x.duc_added = (
@@ -145,13 +162,13 @@ export class DepositPage {
 
   private getDeposit(id) {
     return this.httpClient
-      .get(`${this.apiProvider.getAddresses().ducatuscoins}/api/v3/get_deposit_info/?deposit_id=${id}`)
+      .get(`${this.apiProvider.getAddresses().deposit}/api/v3/get_deposit_info/?deposit_id=${id}`)
       .toPromise();
   }
 
   private sendTX(raw_tx_hex) {
     return this.httpClient
-      .post(`${this.apiProvider.getAddresses().ducatuscoins}/api/v3/send_deposit_transaction/`, {
+      .post(`${this.apiProvider.getAddresses().deposit}/api/v3/send_deposit_transaction/`, {
         raw_tx_hex
       })
       .toPromise();

@@ -1,6 +1,6 @@
-export class ApiProvider {
+import env from '../../environments';
 
-  public isProduction = false;
+export class ApiProvider {
 
   private config = {
     prod: {
@@ -9,6 +9,7 @@ export class ApiProvider {
       crowdsale: 'https://tokenization.centuriongm.com',
       pog: 'https://d-pog.com',
       ratesApi: 'https://rates.ducatuscoins.com/api/v1/rates/',
+      deposit: 'https://www.ducatuscoins.com',
       swap: {
         status: 'https://www.ducatuscoins.com/api/v4/status/',
         network: 'https://www.ducatuscoins.com/api/v4/networks/',
@@ -19,12 +20,15 @@ export class ApiProvider {
     },
     develop: {
       bitcore: 'https://duc-ws-dev.rocknblock.io',
-      ducatuscoins: 'https://ducsite.rocknblock.io',
+      ducatuscoins: 'https://devducatus.rocknblock.io',
       crowdsale: 'https://tokenization.centuriongm.com',
       // сейчас работает только прод апи
       // crowdsale: 'http://duccrowdsale.rocknblock.io',
       pog: 'https://devgold.rocknblock.io',
       ratesApi: 'https://ducexpl.rocknblock.io/api/v1/rates/',
+      deposit: 'https://www.ducatuscoins.com',
+      //сейчас работает только прод апи
+      //deposit: 'https://ducsite.rocknblock.io/',
       swap: {
         status: 'https://wducx.rocknblock.io/api/v1/status/',
         network: 'https://wducx.rocknblock.io/api/v1/networks/',
@@ -37,10 +41,19 @@ export class ApiProvider {
   };
 
   public getAddresses() {
-    
-    if (this.isProduction) {
+    // if you want build dev:
+    // # npm run build:desktop
+    // if you want build prod: 
+    // # npm run build:desktop-release
+    const mode: string = env && env.name;
+
+    if ( mode === 'production' ) {
+      // tslint:disable-next-line:no-console
+      console.log(`BWS: ${this.config.develop.bitcore}`);
       return this.config.prod;
     } else {
+      // tslint:disable-next-line:no-console
+      console.log(`BWS: ${this.config.develop.bitcore}`);
       return this.config.develop;
     }
   }

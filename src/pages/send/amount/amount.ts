@@ -344,15 +344,27 @@ export class AmountPage {
   }
 
   public sendMax(): void {
-    this.useSendMax = !['ducx'].includes(this.wallet.coin);
+    this.useSendMax = true;
     this.allowSend = true;
+
     if (!this.wallet) {
       return this.finish();
     }
+
+    if (
+      this.wallet.cachedStatus &&
+      this.wallet.cachedStatus.availableBalanceSat
+    ) {
+      this.logger.debug(
+        `availableBalanceSat: ${this.wallet.cachedStatus.availableBalanceSat}`
+      );
+    }
+
     const maxAmount = this.txFormatProvider.satToUnit(
       this.wallet.cachedStatus.availableBalanceSat,
       this.wallet.coin
     );
+
     this.zone.run(() => {
       this.expression = this.availableUnits[this.unitIndex].isFiat
         ? this.toFiat(maxAmount, this.wallet.coin).toFixed(2)
@@ -383,6 +395,10 @@ export class AmountPage {
     if( isDecimals  || this.expression === '0' ){
       this.expression = '0.'
     }
+
+    const numberOfPoints = this.expression.split('.').length - 1;
+
+    if (numberOfPoints === 1 && digit === '.') return;
 
     if (
       this.expression &&
