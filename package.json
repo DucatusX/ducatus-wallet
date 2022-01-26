@@ -1,8 +1,8 @@
 {
-  "name": "walnew",
-  "description": "A Secure DucatusCoin Wallet",
-  "author": "BitPay",
-  "version": "2.7.11",
+  "name": "@ducatus/wallet",
+  "description": "A Secure DucatusCoin Wallet 3.0",
+  "author": "Ducatus",
+  "version": "0.1.0",
   "keywords": [
     "ducatus",
     "bitcoin",
@@ -21,15 +21,14 @@
     "plugin": false
   },
   "dom_storage_quota": 200,
-  "id": "jid1-x7bV5evAaI1P9Q",
   "homepage": "https://ducatus.io",
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/DUCATUS-revival/ducatus-copay.git",
+    "url": "git@github.com:DUCATUS-revival/ducatus-wallet.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/DUCATUS-revival/ducatus-copay/issues"
+    "url": "https://github.com/DUCATUS-revival/ducatus-wallet/issues"
   },
   "scripts": {
     "postinstall": "npm run env:dev && npm run prompt && npm run patch:bwc",
